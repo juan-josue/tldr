@@ -44,7 +44,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 async function summarizeText(text) {
   try {
-    const response = await fetch("http://localhost:3000/summarize", {
+    const response = await fetch("https://tldr-server.onrender.com:3000/summarize", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
