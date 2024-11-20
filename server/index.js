@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3000;
 const openai = new OpenAI();
 
 const corsOptions = {
-  origin: "chrome-extension://pbjcfdkkeafchghhpcojbenlibdknilg", // Allow your Chrome extension's origin
+  origin: "chrome-extension://jmhlnbiejdlodhnbcpcncjcegclkblgg", // Allow your Chrome extension's origin
   methods: ["GET", "POST"],
   allowedHeaders: ["Content-Type"],
 };
