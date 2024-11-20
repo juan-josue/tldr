@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "TLDR: A summary tool",
+  "version": "1.0",
+  "description": "Summarizes webpage content, and ask follow up questions with AI.",
+  "permissions": ["scripting", "activeTab"],
+  "action": {
+    "default_popup": "popup/popup.html"
+  },
+  "host_permissions": [
+    "http://localhost:3000/*"
+  ],
+  "icons": {
+    "16": "images/icon-16.png",
+    "32": "images/icon-32.png",
+    "48": "images/icon-48.png",
+    "128": "images/icon-128.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}

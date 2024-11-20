@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <link href="./styles.css" rel="stylesheet" />
+  </head>
+  <body>
+    <nav>
+      <div id="logo"></div>
+      <h3 class="work-sans-title">TLDR <span class="work-sans-paragraph">AI summary tool</span></h3>
+    </nav>
+    <main class="work-sans-paragraph">
+      <div id="text-box">
+        <div id="loading" class="speech-bubble speech-bubble-left">
+          Summarizing the page's content...
+        </div>
+        <div id="summary" class="speech-bubble speech-bubble-left"></div>
+      </div>
+
+      <div id="input-box">
+        <input
+          type="text"
+          id="user-input"
+          placeholder="Type your question here..."
+        />
+        <button id="send-btn">+</button>
+      </div>
+    </main>
+
+    <script src="../scripts/popup.js"></script>
+  </body>
+</html>
