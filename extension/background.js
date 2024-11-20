@@ -68,7 +68,7 @@ async function summarizeText(text) {
 async function askQuestion(text, question) {
   console.log('question asked: ' + question);
   try {
-    const response = await fetch("http://localhost:3000/question", {
+    const response = await fetch("https://tldr-server.onrender.com:3000/question", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
