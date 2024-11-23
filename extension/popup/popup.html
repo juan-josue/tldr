@@ -1,15 +1,24 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TLDR</title>
     <link href="./styles.css" rel="stylesheet" />
   </head>
   <body>
+    <!-- Logo area -->
     <nav>
       <div id="logo"></div>
-      <h3 class="work-sans-title">TLDR <span class="work-sans-paragraph">AI summary tool</span></h3>
+      <h3 class="work-sans-title">
+        TLDR <span class="work-sans-paragraph">AI summary tool</span>
+      </h3>
     </nav>
+
+    <!-- Main body -->
     <main class="work-sans-paragraph">
+
+      <!-- chat box -->
       <div id="text-box">
         <div id="loading" class="speech-bubble speech-bubble-left">
           Summarizing the page's content...
@@ -17,6 +26,7 @@
         <div id="summary" class="speech-bubble speech-bubble-left"></div>
       </div>
 
+      <!-- user input area -->
       <div id="input-box">
         <input
           type="text"
