@@ -8,19 +8,20 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
 const openai = new OpenAI();
 
 const corsOptions = {
-  origin: "chrome-extension://jmhlnbiejdlodhnbcpcncjcegclkblgg", // Allow your Chrome extension's origin
+  origin: "chrome-extension://jmhlnbiejdlodhnbcpcncjcegclkblgg", // Allow Chrome extension's origin
   methods: ["GET", "POST"],
   allowedHeaders: ["Content-Type"],
 };
 
+// Middleware
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(morgan("dev"));
 
+// Route - summarize page text
 app.post("/summarize", async (req, res) => {
   const { text } = req.body;
 
@@ -55,6 +56,7 @@ app.post("/summarize", async (req, res) => {
   }
 });
 
+// Route - answer question about page text
 app.post("/question", async (req, res) => {
   const { text, question } = req.body;
 
@@ -95,6 +97,7 @@ app.post("/question", async (req, res) => {
   }
 });
 
+// Start server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
