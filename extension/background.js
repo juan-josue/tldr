@@ -1,50 +1,52 @@
-const extractTextFromPage = () => document.body.innerText;
+const API_BASE_URL = "https://tldr-server.onrender.com";
 
+// Utility function to extract the current webpage's content
+const extractPageText = () => document.body.innerText;
+
+// Utility function to run the provided script on the active tab (most recently used)
+const runScriptOnActiveTab = (callback, script) => {
+  chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
+    const tab = tabs[0]; // Get active tab (most recently used)
+
+    chrome.scripting.executeScript(
+      {
+        target: { tabId: tab.id },
+        func: script, // Execute provided script
+      },
+      async (results) => {
+        const pageText = results[0].result; // Grab page text from script result
+        callback(pageText);
+      }
+    );
+  });
+}
+
+// Chrome runtime message listener
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "getSummary") {
-    chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
-      const tab = tabs[0]; // Get active tab
 
-      chrome.scripting.executeScript(
-        {
-          target: { tabId: tab.id },
-          func: extractTextFromPage,
-        },
-        async (results) => {
-          const pageText = results[0].result; // Extracted text from the page
-          const currentSummary = await summarizeText(pageText); // Get summary
-          sendResponse({ summary: currentSummary });
-        }
-      );
-    });
+    runScriptOnActiveTab(async (pageText) => {
+      const summary = await summarizeText(pageText, message.question);
+      sendResponse({ summary });
+    }, extractPageText);
 
     return true; // Required for async onMessage
   }
 
   if (message.type === "askQuestion") {
-    chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
-      const tab = tabs[0]; // Get active tab
-
-      chrome.scripting.executeScript(
-        {
-          target: { tabId: tab.id },
-          func: extractTextFromPage,
-        },
-        async (results) => {
-          const pageText = results[0].result; // Extracted text from the page
-          const answer = await askQuestion(pageText, message.question); // Get answer to question
-          sendResponse({ answer: answer });
-        }
-      );
-    });
+    runScriptOnActiveTab(async (pageText) => {
+      const answer = await askQuestion(pageText, message.question);
+      sendResponse({ answer });
+    }, extractPageText);
 
     return true; // Required for async onMessage
   }
 });
 
+// Function to send a request to the backend to summarize text
 async function summarizeText(text) {
   try {
-    const response = await fetch("https://tldr-server.onrender.com/summarize", {
+    const response = await fetch(`${API_BASE_URL}/summarize`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -65,10 +67,11 @@ async function summarizeText(text) {
   }
 }
 
+// Function to send a request to the backend to answer a question about text
 async function askQuestion(text, question) {
   console.log('question asked: ' + question);
   try {
-    const response = await fetch("https://tldr-server.onrender.com/question", {
+    const response = await fetch(`${API_BASE_URL}/question`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -1,73 +1,78 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const loadingElement = document.getElementById("loading");
-  const summaryElement = document.getElementById("summary");
+// Utility function to create a new message to the chat
+const appendChatBubble = (text, textBox, leftOrRight) => {
+  const bubble = document.createElement("div");
+  bubble.className = `speech-bubble speech-bubble-${leftOrRight}`;
+  bubble.textContent = text;
+  textBox.appendChild(bubble);
+  return bubble;
+};
 
+// Utility function to toggle element visibility
+const toggleVisibility = (element, makeVisible) => {
+  element.style.display = makeVisible ? "block" : "none";
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  // HTML page elements
+  const loadingText = document.getElementById("loading");
+  const summaryText = document.getElementById("summary");
   const userInput = document.getElementById("user-input");
   const sendBtn = document.getElementById("send-btn");
   const textBox = document.getElementById("text-box");
 
-  // Initially show the loading message
-  loadingElement.style.display = "block";
-  summaryElement.style.display = "none"; // Hide summary initially
+  // Show loading and hide summary initially
+  toggleVisibility(loadingText, true);
+  toggleVisibility(summaryText, false);
 
-  // Send message to background to fetch the summary
+  // Send message to background to fetch the summary text
   chrome.runtime.sendMessage({ type: "getSummary" }, (response) => {
-    if (response && response.summary) {
-      // Hide the loading message and show the summary
-      loadingElement.style.display = "none";
-      summaryElement.style.display = "block";
-      summaryElement.textContent = response.summary;
-    } else {
-      // Handle case where summary is unavailable
-      loadingElement.style.display = "none";
-      summaryElement.style.display = "block";
-      summaryElement.textContent = "Failed to load summary.";
-    }
+    // Hide loading and show returned summary
+    toggleVisibility(loadingText, false);
+    toggleVisibility(summaryText, true);
+
+    // If summary request successful display summary text, otherwise an error msg
+    summaryText.textContent = response?.summary
+      ? response.summary
+      : "Failed to load summary.";
   });
 
-  // Send a message to background to asnwer the question in the input box
+  // Send a message to background to answer the question in the input box
   function sendQuestionMessage() {
     const question = userInput.value.trim();
-    if (question) {
-      // Clear the input field
-      userInput.value = "";
+    if (!question) return;
 
-      // Display the user's question in a chat bubble
-      const userBubble = document.createElement("div");
-      userBubble.className = "speech-bubble speech-bubble-right";
-      userBubble.textContent = question;
-      textBox.appendChild(userBubble);
+    // Wipe user input
+    userInput.value = "";
 
-      // Show loading bubble for answer
-      const loadingAnswerBubble = document.createElement("div");
-      loadingAnswerBubble.className = "speech-bubble speech-bubble-left";
-      loadingAnswerBubble.textContent = "Thinking...";
-      textBox.appendChild(loadingAnswerBubble);
+    // Display the user's question in the chat
+    appendChatBubble(question, textBox, "right");
 
-      // Send the question to the background script
-      chrome.runtime.sendMessage(
-        { type: "askQuestion", question: question },
-        (response) => {
-          // Remove loading bubble
-          loadingAnswerBubble.remove();
+    // Show a loading message in the chat
+    const loadingAnswerBubble = appendChatBubble(
+      "Thinking...",
+      textBox,
+      "left"
+    );
 
-          // Display the answer in a new bubble
-          const answerBubble = document.createElement("div");
-          answerBubble.className = "speech-bubble speech-bubble-left";
-          answerBubble.textContent =
-            response && response.answer
-              ? response.answer
-              : "No answer available.";
-          textBox.appendChild(answerBubble);
-        }
-      );
-    }
+    // Send the question message to the background
+    chrome.runtime.sendMessage(
+      { type: "askQuestion", question: question },
+      (response) => {
+        // Response recieved, remove loading message from chat
+        loadingAnswerBubble.remove();
+
+        // Display the answer in the chat
+        const answerBubbleText = response?.answer
+          ? response.answer
+          : "No answer available.";
+        appendChatBubble(answerBubbleText, textBox, "left");
+      }
+    );
   }
 
+  // Event listeners, send msg on btn click or enter key up
   sendBtn.addEventListener("click", sendQuestionMessage);
   userInput.addEventListener("keyup", (event) => {
-    if (event.key === "Enter") {
-      sendQuestionMessage();
-    }
+    if (event.key === "Enter") sendQuestionMessage();
   });
 });
