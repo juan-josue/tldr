@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "TLDR: A summary tool",
+  "name": "TLDR: AI summary tool",
   "version": "1.0",
   "description": "Summarizes webpage content, and ask follow up questions with AI.",
   "permissions": ["scripting", "activeTab"],
